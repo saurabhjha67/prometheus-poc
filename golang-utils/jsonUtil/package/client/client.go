@@ -32,7 +32,7 @@ func (c *client) CallMetericsInfo() (*http.Response, error) {
 	}
 
 	//token := os.Getenv("TOKEN")
-	token := "ya29.A0ARrdaM8ZuONgnjSzqb6GLiFR4hExAgxdLfyLrjuMnxrf19BwmBikkybPvSVQO1gpT5hupgEndFZ1Tf7rGS6mghzBBcO1hIxnKnDr2ucCyHdiElCDmsp2dXrLObEtWM7cCTKoA5f4Oow7FKJzWXtwkRoRWCS1IdL0OAw4QA"
+	token := "ya29.A0ARrdaM_765V2GAIYHrd-QDaeP8PjUNZLCMjjNPY_YYYzWz0Hc2QdP4D5c6ywJJqvqwYoUozt70LkAxJ_wZkZ1QvgKCKjZMl-x7rEBMZjDR2oslIPY7VHe5A4iy3VHZLuv402I2BtGw7R_a1zNOdRFKmZLboToroFRWTl-g"
 	req.Header.Add("Content-Type", `application/json`)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 

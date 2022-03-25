@@ -16,7 +16,7 @@ func Parse(metricJsonContent []byte) ([]string, error) {
 	_ = json.Unmarshal(metricJsonContent, &data)
 
 	for i := 0; i < len(data.MetricsAll); i++ {
-		if strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "CPU") && !strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "COMMITTED") && !strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "PREEMPTIBLE") && !strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "ALL REGIONS") && data.MetricsAll[i].DisplayName != "CPUs" {
+		if strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "CPU") && !strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "COMMITTED") && !strings.Contains(strings.ToUpper(data.MetricsAll[i].DisplayName), "PREEMPTIBLE") && data.MetricsAll[i].DisplayName != "N2D CPUs" {
 			output = append(output, data.MetricsAll[i].Metric)
 		}
 	}
