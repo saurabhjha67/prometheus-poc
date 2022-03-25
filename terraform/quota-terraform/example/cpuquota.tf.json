@@ -1,0 +1,25 @@
+{
+ "module": [
+  {
+   "cpu": [
+    {
+     "cpu_names": [
+      "compute.googleapis.com/a2_cpus",
+      "compute.googleapis.com/c2_cpus",
+      "compute.googleapis.com/c2d_cpus",
+      "compute.googleapis.com/cpus",
+      "compute.googleapis.com/cpus_all_regions",
+      "compute.googleapis.com/m1_cpus",
+      "compute.googleapis.com/m2_cpus",
+      "compute.googleapis.com/n2_cpus"
+     ],
+     "override": "4",
+     "overridedisk": "1000",
+     "projectid": "totemic-chalice-345108",
+     "region": "asia-east1",
+     "source": "../cpuquota"
+    }
+   ]
+  }
+ ]
+}
