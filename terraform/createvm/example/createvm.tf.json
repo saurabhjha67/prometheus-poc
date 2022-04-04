@@ -8,8 +8,10 @@
           "region": "us-west1",
           "source": "../createvm",
           "machinetype": "n2-standard-2",
-          "image": "debdian-cloud/debian-9",
-          "vmnos": "2"
+          "image": "debian-cloud/debian-9",
+          "vmnos": "1",
+          "gce_ssh_user": "aviruproychowdhury",
+          "gce_ssh_pub_key_file": "/var/lib/jenkins/.ssh/id_rsa.pub"
         }
       ]
     }
