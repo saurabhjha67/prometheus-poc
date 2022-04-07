@@ -39,6 +39,7 @@ func NewServer() (Server, error) {
 	// IP Pool methods
 	ipPool := r.PathPrefix("/metrics").Subrouter()
 	ipPool.HandleFunc("/publish", result.PostInstanceMessageHandler).Methods("POST")
+	ipPool.HandleFunc("/health", result.HealthHandler).Methods("GET")
 
 	srv := &http.Server{
 		Addr: fmt.Sprintf("0.0.0.0:%v", port),

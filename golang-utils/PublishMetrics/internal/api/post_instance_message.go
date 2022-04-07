@@ -8,6 +8,7 @@ import (
 
 	"com.publish.api/internal/contracts"
 	"com.publish.api/internal/pubSub"
+	"github.com/prometheus/alertmanager/template"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +22,7 @@ func (s *server) PostInstanceMessageHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var request contracts.AlertManagerRequest
+	var request template.Data
 	err = json.Unmarshal(jsonBytes, &request)
 
 	if err != nil {
@@ -29,9 +30,24 @@ func (s *server) PostInstanceMessageHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	message := request.Alerts[0].Labels.Instance
+	var metricMetadatas []contracts.MetriMetadata
 
-	err = pubSub.PublishProtoMessages(w, message)
+	for _, alert := range request.Alerts {
+		metric := contracts.MetriMetadata{
+			Instance:  alert.Labels["instance"],
+			ProjectId: alert.Labels["project_Id"],
+			Zone:      alert.Labels["zone"],
+		}
+		metricMetadatas = append(metricMetadatas, metric)
+	}
+
+	// metricMetadata := contracts.MetriMetadata{
+	// 	Instance:  instanceName,
+	// 	ProjectId: projectId,
+	// 	Zone:      zone,
+	// }
+
+	err = pubSub.PublishProtoMessages(w, metricMetadatas)
 
 	if err != nil {
 		apiErr, ok := err.(*pubSub.ApiError)
@@ -54,6 +70,7 @@ func (s *server) PostInstanceMessageHandler(w http.ResponseWriter, r *http.Reque
 			return
 		}
 	}
-
-	writeResponse(w, http.StatusOK, message)
+	for _, metricInfo := range metricMetadatas {
+		writeResponse(w, http.StatusOK, metricInfo)
+	}
 }
