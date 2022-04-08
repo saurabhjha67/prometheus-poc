@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: publishmetric
-  pullPolicy: IfNotPresent
+  repository: us.gcr.io/v2agent-9423a/publish-metrics/publishmetrics
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "1.0.0"
 
 imagePullSecrets: 
   - name: regcred
@@ -17,7 +17,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
+  create: true
   # Annotations to add to the service account
   annotations: 
      iam.gke.io/gcp-service-account: prometheus-pubsub-sa@v2agent-9423a.iam.gserviceaccount.com
@@ -34,11 +34,17 @@ securityContext:
     runAsUser: 1010
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 8085
 
 
-resources: {}
+resources:
+    limits:
+      cpu: 250m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 1Gi
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
