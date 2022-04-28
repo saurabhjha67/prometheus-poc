@@ -161,16 +161,31 @@ def get_parsed_request(request):
                      'hours',
                      'page_size']
 
-    parsed_request = request.get_json()
+    # parsed_request = request.get_json()
 
     for name in int_key_names:
-        parsed_request[name] = int(parsed_request[name])
+        request[name] = int(request[name])
 
-    return parsed_request
+    return request
 
 
-def export(request):
-    parsed_request = get_parsed_request(request)
+def export(dummy_request,context):
+    request_dic = {
+        "project_id": "my-project-all-environment", 
+        "filter": ["metric.type = \"compute.googleapis.com/instance/cpu/usage_time\"", 
+                    "metric.type = \"compute.googleapis.com/instance/cpu/utilization\"",
+                    "metric.type = \"compute.googleapis.com/instance/cpu/reserved_cores\"", 
+                    "metric.type = \"compute.googleapis.com/instance/uptime_total\""], 
+        "weeks": 0, 
+        "days": 0, 
+        "hours": 1, 
+        "bq_destination_dataset": "pocstackdriverintegration", 
+        "bq_destination_table": "vm-cpu-metric", 
+        "page_size": 500, 
+        "bucket_name": "my-project-all-environment-metric-exporter"
+    }
+   
+    parsed_request = get_parsed_request(request_dic)
 
     interval = get_interval(parsed_request['weeks'],
                             parsed_request['days'],
@@ -185,7 +200,7 @@ def export(request):
         raw_metrics_data = get_metric_data(api_request)
         page_num = 1
         parsed_page = parse_as_json_new_line(raw_metrics_data.time_series)
-        logging.info(parsed_page)
+        logging.info("parsed_page {} ".format(parsed_page))
         write_to_gcs(parsed_request['bucket_name'],
                  parsed_request['bq_destination_table'],
                  page_num,
@@ -205,8 +220,10 @@ def export(request):
                         parsed_page)
 
         gcs_path = f"gs://{parsed_request['bucket_name']}/{parsed_request['bq_destination_table']}/{export_datetime}/*"
-        
-        load_to_bq(parsed_request['project_id'],
+
+        project_id_bq = os.environ['GCP_PROJECT']
+
+        load_to_bq(project_id_bq,
                 parsed_request['bq_destination_dataset'],
                 parsed_request['bq_destination_table'],
                 gcs_path)
