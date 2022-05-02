@@ -15,14 +15,16 @@ The GCP Metric Exporter project created to address the following points:
 
 ### Architecture
 
-1) Cloud Scheduler - For each metric export we will create new cloud scheduler that contains the required information of the export job the message body and to manage the HTTP trigger.
+1) Cloud Scheduler - For all metrics export we will create a cloud scheduler that contains the required information of the export job the message body and to manage the pubsub trigger.
 
-2) Cloud Function - This function is responsible for executing the export step using the information provided by the cloud scheduler and triggered by HTTP endpoint, and loading the data into the BigQuery.
+2) Pubsub - A topic is created and will have subscription from cloud scheduler, that post msg in pubsub. This message is consumed by Cloud Function which is running as internal
+and gclb
 
-3) Cloud Storage - The cloud function will make the API call and split the response into different files (using the parameter PAGE_SIZE), and will store it on GCS for the load job into BQ.
+3) Cloud Function - This function is responsible for executing the export step using the information provided by the cloud scheduler and triggered by pubsub, and loading the data into the BigQuery.
 
-4) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
+4) Cloud Storage - The cloud function will make the API call and split the response into different files (using the parameter PAGE_SIZE), and will store it on GCS for the load job into BQ.
 
+5) BigQuery - Store the exported metrics data for future analysis (One table for each metric).
 
 ![alt text](images/Metric_Exporter_Architecture.png)
 
@@ -71,7 +73,7 @@ In order to deploy the pipeline there are configuration parameters on the Makefi
 
 - ```HOURS``` - The number of hours back to get the metric data for each runtime.
 
-- ```FILTER``` - The cloud monitoring [filter expression](https://cloud.google.com/monitoring/api/v3/filters), keep the pattern of single quote (') on the outer part of the filter and double quote (") inside the filter. Example: ```FILTER='metric.type = "storage.googleapis.com/storage/object_count"'```
+- ```FILTER``` - The cloud monitoring [filter expression](https://cloud.google.com/monitoring/api/v3/filters), keep the pattern of single quote (') on the outer part of the filter and double quote (") inside the filter. Example: ```FILTER=['metric.type = "storage.googleapis.com/storage/object_count"']```. This is an array of metric.type
 
 - ```BQ_DATASET``` - BigQuery dataset name, Configure only at the first deployment.
 
@@ -79,6 +81,11 @@ In order to deploy the pipeline there are configuration parameters on the Makefi
 
 - ```PAGE_SIZE``` - The pagination size for splitting the API response by the number of data points.
 
+### Create PubSub Topic
+
+```
+gcloud pubsub topics create $(TOPIC_NAME) --project=$(PROJECT_ID)
+```
 
 ### Create BigQuery Dataset:
 
@@ -216,8 +223,9 @@ To delete the Cloud Function please run:
 
 ``` make delete_cloud_function ```
 
-To specific export please run:
+To delete scheduler:
 
-``` delete_scheduler ```
+``` make delete_scheduler ```
+To delete topic:
 
-Any comments or suggestions are welcome.
+``` make delete_topic ```

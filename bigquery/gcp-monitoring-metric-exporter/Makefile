@@ -2,18 +2,18 @@
 PROJECT_ID="lims001-saas-mon"
 
 # Cloud Function Parameters #
-CF_REGION="us-east1"
+CF_REGION="us-west1"
 TIMEOUT=540 # INT - In seconds max=540
-MEMORY=1024 # INT - In MB max=8192MB
+MEMORY=256 # INT - In MB max=8192MB
 PAGE_SIZE=500 # INT
 
 # Cloud Scheduler Parameters #
 EXPORT_NAME="vm-cpu-metric" # Keep this name unique for each metric export, this is the scheduler name as well as the table name in BigQuery
 TIME_ZONE="UTC"
-SCHEDULE="0/15 * * * *" # The export job will be triggered by this expression, for more information please look at https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules.
+SCHEDULE="* */2 * * *" # The export job will be triggered by this expression, for more information please look at https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules.
 WEEKS=0 # INT
 DAYS=0 # INT
-HOURS=1 # INT
+HOURS=2 # INT
 FILTER='metric.type = "compute.googleapis.com/instance/cpu/usage_time"','metric.type = "compute.googleapis.com/instance/cpu/utilization"','metric.type = "compute.googleapis.com/instance/cpu/reserved_cores"','metric.type = "compute.googleapis.com/instance/uptime_total"' # Change to your metric filter
 # BigQuery Parameters - Configure only at First deployment #
 BQ_DATASET="brcm_gcp_usage_metrics" #
@@ -64,7 +64,7 @@ deploy_topic:
 
 deploy_cloud_function:
 	gcloud functions deploy $(CF_NAME) --region=$(CF_REGION) --runtime=$(RUNTIME) --trigger-topic=$(TOPIC_NAME) --source=$(SOURCE_PATH) \
-	--ingress-settings="internal-only" --entry-point=$(ENTRY_POINT) --project=$(PROJECT_ID) --service-account=$(CF_SA) \
+	--ingress-settings="internal-and-gclb" --entry-point=$(ENTRY_POINT) --project=$(PROJECT_ID) --service-account=$(CF_SA) \
 	--memory=$(MEMORY) --timeout=$(TIMEOUT)
 
 deploy_scheduler: build_json_msg
