@@ -226,6 +226,7 @@ To delete the Cloud Function please run:
 To delete scheduler:
 
 ``` make delete_scheduler ```
+
 To delete topic:
 
 ``` make delete_topic ```
